@@ -1,30 +1,51 @@
 package hotelauto.equipments;
 
+import hotelauto.enums.EquipmentStatusEnum;
+import hotelauto.enums.EquipmentTypeEnum;
+
 public class AC implements IEquipment {
 
-    private boolean acOn = false;
+    private EquipmentStatusEnum status = EquipmentStatusEnum.OFF;
+    private final EquipmentTypeEnum type;
+    private final String name;
 
-    public AC () {
-
+    public AC (final String name, final EquipmentTypeEnum type) {
+        this.name = name;
+        this.type = type;
     }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public void turnOn() {
-        acOn = true;
+        status = EquipmentStatusEnum.ON;
     }
 
     @Override
     public void turnOff() {
-        acOn = false;
+        status = EquipmentStatusEnum.OFF;
     }
     
     @Override
     public boolean isOn() {
-        return acOn;
-    }    
+        return EquipmentStatusEnum.ON.equals(status);
+    }        
+
+    @Override
+    public EquipmentStatusEnum getStatus() {
+        return status;
+    }
+
+    @Override
+    public EquipmentTypeEnum getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return toStringCustom();
+    }
 }

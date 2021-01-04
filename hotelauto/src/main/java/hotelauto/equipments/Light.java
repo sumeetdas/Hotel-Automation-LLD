@@ -1,30 +1,51 @@
 package hotelauto.equipments;
 
+import hotelauto.enums.EquipmentStatusEnum;
+import hotelauto.enums.EquipmentTypeEnum;
+
 public class Light implements IEquipment {
 
-    boolean lightOn = false;
+    private EquipmentStatusEnum status = EquipmentStatusEnum.OFF;
+    private final EquipmentTypeEnum type;
+    private final String name;
 
-    public Light () {
-
+    public Light (final String name, final EquipmentTypeEnum type) {
+        this.name = name;
+        this.type = type;
     }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public void turnOn() {
-        lightOn = true;
+        status = EquipmentStatusEnum.ON;
     }
 
     @Override
     public void turnOff() {
-        lightOn = false;
+        status = EquipmentStatusEnum.OFF;
     }
 
     @Override
     public boolean isOn() {
-        return lightOn;
+        return EquipmentStatusEnum.ON.equals(status);
     }    
+
+    @Override
+    public EquipmentStatusEnum getStatus() {
+        return status;
+    }
+
+    @Override
+    public EquipmentTypeEnum getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return toStringCustom();
+    }
 }
