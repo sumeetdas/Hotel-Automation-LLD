@@ -3,7 +3,7 @@ package hotelauto.vo;
 import java.util.ArrayList;
 import java.util.List;
 
-import hotelauto.corridors.Corridor;
+import hotelauto.corridors.ICorridor;
 
 public class Floor {
 
@@ -13,9 +13,9 @@ public class Floor {
         this.name = name;    
     }
 
-    private final List<Corridor> corridors = new ArrayList<>();
+    private final List<ICorridor> corridors = new ArrayList<>();
     
-    public void addCorridor(Corridor c) {
+    public void addCorridor(ICorridor c) {
         corridors.add(c);
     }
 

@@ -8,4 +8,8 @@ public class HotelAutomation {
     public HotelAutomation (final Hotel hotel) {
         this.hotel = hotel;
     } 
+
+    public Hotel getHotel () {
+        return hotel;
+    }
 }

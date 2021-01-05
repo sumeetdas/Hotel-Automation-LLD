@@ -9,4 +9,8 @@ public enum EquipmentStatusEnum {
     private EquipmentStatusEnum(boolean status) {
         this.status = status;
     }
+
+    public boolean getStatus () {
+        return status;
+    }
 }
