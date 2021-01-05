@@ -5,36 +5,56 @@ import java.util.List;
 
 import hotelauto.enums.SignalTypeEnum;
 import hotelauto.equipments.IEquipment;
+import hotelauto.vo.Floor;
 
-public class Corridor {
+public abstract class AbstractCorridor implements ICorridor {
     private SignalTypeEnum signalType = SignalTypeEnum.NO_MOVEMENT;
     private final String name;
+    private final Floor floor;
     private final List<IEquipment> equipments = new ArrayList<>();  
     
-    public Corridor (String name) {
+    public AbstractCorridor (String name, Floor floor) {
         this.name = name;
+        this.floor = floor;
     }     
 
+    @Override
     public void addEquipment(IEquipment e) {
         equipments.add(e);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public synchronized SignalTypeEnum getSignal() {
         return signalType;
     }
 
+    @Override
     public synchronized void setSignal(final SignalTypeEnum signalType) {
         this.signalType = signalType;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(name).append(" ");
-        equipments.forEach(e -> sb.append(e.toString()).append("  "));
-        return sb.toString();
+        return toStringCustom();
+    }
+
+    @Override
+    public List<IEquipment> getEquipments() {
+        return equipments;
+    }
+
+    @Override
+    public Floor getFloor() {
+        return floor;
+    }
+
+    @Override
+    public double getPowerConsumption() {
+        return getEquipments().stream().mapToDouble(IEquipment::getPowerConsumption).reduce(0D, (a,b) -> a + b);
     }
 }
