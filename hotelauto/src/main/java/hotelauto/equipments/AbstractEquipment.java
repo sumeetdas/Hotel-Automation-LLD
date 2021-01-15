@@ -5,21 +5,18 @@ import java.util.TimerTask;
 
 import hotelauto.corridors.ICorridor;
 import hotelauto.enums.EquipmentStatusEnum;
-import hotelauto.vo.Floor;
 
 public abstract class AbstractEquipment implements IEquipment {
+
     private EquipmentStatusEnum status = EquipmentStatusEnum.OFF;
     private final String name;
     private final Timer timer = new Timer();
     protected double unitsPerSecond = 5.0 / (12 * 3600);
-    private final ICorridor corridor;
-    private final Floor floor;
+    private ICorridor corridor = null;
     protected double powerConsumption;
 
-    protected AbstractEquipment (final String name, final ICorridor corridor, final Floor floor) {
+    protected AbstractEquipment (final String name) {
         this.name = name;
-        this.corridor = corridor;
-        this.floor = floor;
     }
 
     @Override
@@ -53,13 +50,13 @@ public abstract class AbstractEquipment implements IEquipment {
     }
 
     @Override
-    public ICorridor getCorridor() {
-        return corridor;
+    public void setCorridor(ICorridor corridor) {
+        this.corridor = corridor;
     }
 
     @Override
-    public Floor getFloor() {
-        return floor;
+    public ICorridor getCorridor() {
+        return corridor;
     }
 
     @Override
@@ -91,4 +88,7 @@ public abstract class AbstractEquipment implements IEquipment {
     public void scheduleAtFixedRate(Runnable op, int delay, int period) {
         timer.scheduleAtFixedRate((TimerTask) op, delay, period);
     }
+
+    @Override
+    public abstract AbstractEquipment clone() throws CloneNotSupportedException;
 }

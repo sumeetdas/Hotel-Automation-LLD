@@ -4,9 +4,8 @@ import hotelauto.IPowerConsumption;
 import hotelauto.corridors.ICorridor;
 import hotelauto.enums.EquipmentStatusEnum;
 import hotelauto.enums.EquipmentTypeEnum;
-import hotelauto.vo.Floor;
 
-public interface IEquipment extends IPowerConsumption {
+public interface IEquipment extends IPowerConsumption, Cloneable {
     // name of equipment
     String getName();
 
@@ -15,6 +14,12 @@ public interface IEquipment extends IPowerConsumption {
 
     // turn off the equipment
     void turnOff();
+
+    // set parent corridor
+    void setCorridor(ICorridor corridor);
+
+    // set unit of power consumed per second
+    void setUnitsConsumedPerSecond(double unitsPerSecond);
 
     // is equipment on?
     boolean isOn();
@@ -28,14 +33,8 @@ public interface IEquipment extends IPowerConsumption {
     // get unit of power consumed per second
     double getUnitsConsumedPerSecond();
 
-    // set unit of power consumed per second
-    void setUnitsConsumedPerSecond(double unitsPerSecond);
-
     // get corridor containing this equipment
     ICorridor getCorridor();
-
-    // get floor containing this equipment
-    Floor getFloor();
 
     // timer-related convenience methods
     
@@ -52,4 +51,6 @@ public interface IEquipment extends IPowerConsumption {
     default String toStringCustom() {
         return getName() + ": " + getStatus().name();
     }
+
+    IEquipment clone() throws CloneNotSupportedException;
 }

@@ -1,18 +1,24 @@
 package hotelauto.equipments;
 
-import hotelauto.corridors.ICorridor;
 import hotelauto.enums.EquipmentTypeEnum;
-import hotelauto.vo.Floor;
 
 public class Light extends AbstractEquipment {
 
-    public Light(String name, final ICorridor corridor, final Floor floor) {
-        super(name, corridor, floor);
+    public Light(String name) {
+        super(name);
         unitsPerSecond = (5.0 / (12 * 3600));
     }
 
     @Override
     public EquipmentTypeEnum getType() {
         return EquipmentTypeEnum.LIGHT;
+    }
+
+    @Override
+    public Light clone() throws CloneNotSupportedException {
+        final Light light = new Light(getName());
+        light.setCorridor(getCorridor());
+        light.setUnitsConsumedPerSecond(getUnitsConsumedPerSecond());
+        return light;
     }
 }

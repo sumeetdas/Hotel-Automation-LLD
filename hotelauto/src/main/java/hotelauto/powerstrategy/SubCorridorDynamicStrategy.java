@@ -9,11 +9,26 @@ import hotelauto.enums.SignalTypeEnum;
 import hotelauto.equipments.AC;
 import hotelauto.equipments.Light;
 
-public class SubCorridorPowerStrategy implements IPowerStrategy {
+public class SubCorridorDynamicStrategy implements IPowerStrategy {
+    private ICorridor corridor = null;
     private boolean powerSaveMode = false;
+
+    // this timer polls units consumed in the corridor every 10 min
+    // once the powerSaveMode is on, the 
     private Timer unitPollTimer = new Timer();
 
-    public SubCorridorPowerStrategy (final ICorridor corridor) {
+    public SubCorridorDynamicStrategy () {
+    }
+
+    @Override
+    public ICorridor getCorridor() {
+        return corridor;
+    }
+
+    @Override
+    public IPowerStrategy initialize(ICorridor corridor) {
+        
+        this.corridor = corridor;
 
         unitPollTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -28,32 +43,41 @@ public class SubCorridorPowerStrategy implements IPowerStrategy {
         }, 0, 600_000);
 
         acPowerStrategy(corridor);
+
+        return this;
     }
 
     private void acPowerStrategy(ICorridor corridor) {
-        corridor.getEquipments().forEach(e -> {
-            if (EquipmentTypeEnum.AC.equals(e.getType())) {
-                acPowerStrategy((AC) e);
-            }
-        });
+        corridor.getEquipments().stream()
+        .filter(e -> EquipmentTypeEnum.AC.equals(e.getType()))
+        .forEach(e -> acPowerStrategy((AC) e));
     }
-    
-    // strategy to switch on AC for 20 min, then turn off
+
     private void acPowerStrategy(AC ac) {
         if (powerSaveMode) {
-            // turn on every 1 hour
-            ac.scheduleAtFixedRate(() -> ac.turnOn(), 0, 3600_000);
-            // turn off after 5 min every 1 hour
-            ac.scheduleAtFixedRate(() -> ac.turnOff(), 300_000, 3600_000);
+            acPowerSaveModeStrategy(ac);
         }
         else {
-            // turn on every 1 hour
-            ac.scheduleAtFixedRate(() -> ac.turnOn(), 0, 3600_000);
-            // turn off after 20 min every 1 hour
-            ac.scheduleAtFixedRate(() -> ac.turnOff(), 1200_000, 3600_000);
+            acDefaultStrategy(ac);
         }
     }
 
+    // strategy to switch on AC for 5 min, then turn off
+    private void acPowerSaveModeStrategy(AC ac) {
+        // turn on every 1 hour
+        ac.scheduleAtFixedRate(() -> ac.turnOn(), 0, 3600_000);
+        // turn off after 5 min every 1 hour
+        ac.scheduleAtFixedRate(() -> ac.turnOff(), 300_000, 3600_000);
+    }
+
+    // strategy to switch on AC for 20 min, then turn off
+    private void acDefaultStrategy(AC ac) {
+        // turn on every 1 hour
+        ac.scheduleAtFixedRate(() -> ac.turnOn(), 0, 3600_000);
+        // turn off after 20 min every 1 hour
+        ac.scheduleAtFixedRate(() -> ac.turnOff(), 1200_000, 3600_000);
+    }
+    
     @Override
     public void acPowerStrategy(AC ac, final SignalTypeEnum signalType) {
         acPowerStrategy(ac);
@@ -83,5 +107,12 @@ public class SubCorridorPowerStrategy implements IPowerStrategy {
                 }, 1000);
                 break;
         }
+    }
+
+    @Override
+    public SubCorridorDynamicStrategy clone() throws CloneNotSupportedException {
+        final SubCorridorDynamicStrategy sub = new SubCorridorDynamicStrategy();
+        sub.initialize(corridor);
+        return sub;
     }
 }

@@ -1,37 +1,32 @@
 package hotelauto.corridors;
 
-import hotelauto.enums.SignalTypeEnum;
-import hotelauto.equipments.AC;
-import hotelauto.equipments.Light;
+import hotelauto.equipments.IEquipment;
 import hotelauto.powerstrategy.IPowerStrategy;
-import hotelauto.vo.Floor;
 
 public class MainCorridor extends AbstractCorridor {
 
-    private final IPowerStrategy powerStrategy = new IPowerStrategy() {
-        @Override
-        public void acPowerStrategy(AC ac, final SignalTypeEnum signalType) {
-            // do nothing for main corridor. Leave ACs keep on running
-        }
-
-        @Override
-        public void lightPowerStrategy(Light light, final SignalTypeEnum signalType) {
-            // do nothing for main corridor. Leave lights keep on running
-        }
-    };
-
-    public MainCorridor(String name, Floor floor) {
-        super(name, floor);
+    public MainCorridor(String name, IPowerStrategy powerStrategy) {
+        super(name, powerStrategy);
     }
 
     @Override
-    public IPowerStrategy getPowerStrategy() {
-        return powerStrategy;
+    public void addEquipment(IEquipment e) {
+        super.addEquipment(e);
+        // turn all electronic appliances for main corridor
+        e.turnOn();
     }
 
     @Override
-    public void processSignal(SignalTypeEnum signalType) {
-        // do nothing - lights and ACs will keep on running irrespective of movement
+    public MainCorridor clone() throws CloneNotSupportedException {
+        final MainCorridor mainCorridor = new MainCorridor(getName(), getPowerStrategy().clone());
+        mainCorridor.setFloor(getFloor());
+        getEquipments().forEach(e -> {
+            try {
+                mainCorridor.addEquipment(e.clone());
+            } catch (CloneNotSupportedException e1) {
+                e1.printStackTrace();
+            }
+        });
+        return mainCorridor;
     }
-    
 }

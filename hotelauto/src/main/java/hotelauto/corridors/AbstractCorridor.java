@@ -5,18 +5,27 @@ import java.util.List;
 
 import hotelauto.enums.SignalTypeEnum;
 import hotelauto.equipments.IEquipment;
+import hotelauto.powerstrategy.IPowerStrategy;
 import hotelauto.vo.Floor;
 
 public abstract class AbstractCorridor implements ICorridor {
+
     private SignalTypeEnum signalType = SignalTypeEnum.NO_MOVEMENT;
     private final String name;
-    private final Floor floor;
     private final List<IEquipment> equipments = new ArrayList<>();  
+    private IPowerStrategy powerStrategy = null;
+    private Floor floor = null;
     
-    public AbstractCorridor (String name, Floor floor) {
+    protected AbstractCorridor (String name,IPowerStrategy powerStrategy) {
         this.name = name;
-        this.floor = floor;
+        setPowerStrategy(powerStrategy);
     }     
+
+    @Override
+    public void setPowerStrategy(IPowerStrategy powerStrategy) {
+        this.powerStrategy = powerStrategy;
+        this.powerStrategy.initialize(this);
+    }
 
     @Override
     public void addEquipment(IEquipment e) {
@@ -24,18 +33,18 @@ public abstract class AbstractCorridor implements ICorridor {
     }
 
     @Override
+    public void setFloor(Floor floor) {
+        this.floor = floor;
+    }
+
+    @Override
+    public void processSignal(SignalTypeEnum signalTypeEnum) {
+        powerStrategy.processSignal(signalType);
+    }
+
+    @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public synchronized SignalTypeEnum getSignal() {
-        return signalType;
-    }
-
-    @Override
-    public synchronized void setSignal(final SignalTypeEnum signalType) {
-        this.signalType = signalType;
     }
 
     @Override
@@ -57,4 +66,11 @@ public abstract class AbstractCorridor implements ICorridor {
     public double getPowerConsumption() {
         return getEquipments().stream().mapToDouble(IEquipment::getPowerConsumption).reduce(0D, (a,b) -> a + b);
     }
+
+    @Override
+    public IPowerStrategy getPowerStrategy() {
+        return powerStrategy;
+    }
+
+    public abstract AbstractCorridor clone() throws CloneNotSupportedException;
 }

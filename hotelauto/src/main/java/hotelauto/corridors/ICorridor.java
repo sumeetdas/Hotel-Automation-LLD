@@ -4,16 +4,17 @@ import java.util.List;
 
 import hotelauto.IPowerConsumption;
 import hotelauto.enums.SignalTypeEnum;
-import hotelauto.equipments.AC;
 import hotelauto.equipments.IEquipment;
-import hotelauto.equipments.Light;
 import hotelauto.powerstrategy.IPowerStrategy;
 import hotelauto.vo.Floor;
 
-public interface ICorridor extends IPowerConsumption {
-    
+public interface ICorridor extends IPowerConsumption, Cloneable {
+
     // adds equipment to corridor
     void addEquipment(IEquipment e);
+
+    // set parent floor
+    void setFloor(Floor floor);
 
     // get name of corridor
     String getName();
@@ -21,33 +22,16 @@ public interface ICorridor extends IPowerConsumption {
     // get floor
     Floor getFloor();
 
-    // get last signal received from sensor
-    SignalTypeEnum getSignal();
-
-    // set new signal received from sensor
-    void setSignal(final SignalTypeEnum signalType);
+    void setPowerStrategy(IPowerStrategy powerStrategy);
 
     // get power strategy of corridor
     IPowerStrategy getPowerStrategy();
 
-    // contains strategy to process a signal and take action on the equipments accordingly
-    default void processSignal(final SignalTypeEnum signalType) {
-        final IPowerStrategy powerStrategy = getPowerStrategy();
-
-        getEquipments().forEach(equipment -> {
-            switch(equipment.getType()) {
-                case AC:
-                    powerStrategy.acPowerStrategy((AC) equipment, signalType);
-                    break;
-                case LIGHT:
-                    powerStrategy.lightPowerStrategy((Light) equipment, signalType);
-                    break;
-            }
-        });
-    }
-
     // get list of all equipments
     List<IEquipment> getEquipments();
+
+    // process sensor signal
+    void processSignal(final SignalTypeEnum signalTypeEnum);
 
     // custom toString impl for all corridors
     default String toStringCustom() {
@@ -55,4 +39,6 @@ public interface ICorridor extends IPowerConsumption {
         getEquipments().forEach(e -> sb.append(e.toString()).append("  "));
         return sb.toString();
     }
+
+    ICorridor clone() throws CloneNotSupportedException;
 }

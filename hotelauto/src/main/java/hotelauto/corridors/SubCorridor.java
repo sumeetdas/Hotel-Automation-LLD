@@ -1,19 +1,24 @@
 package hotelauto.corridors;
 
 import hotelauto.powerstrategy.IPowerStrategy;
-import hotelauto.powerstrategy.SubCorridorPowerStrategy;
-import hotelauto.vo.Floor;
 
 public class SubCorridor extends AbstractCorridor {
 
-    private final IPowerStrategy powerStrategy = new SubCorridorPowerStrategy(this);
-
-    public SubCorridor(String name, Floor floor) {
-        super(name, floor);
+    public SubCorridor(final String name, final IPowerStrategy powerStrategy) {
+        super(name, powerStrategy);
     }
 
     @Override
-    public IPowerStrategy getPowerStrategy() {
-        return powerStrategy;
+    public SubCorridor clone() throws CloneNotSupportedException {
+        final SubCorridor subCorridor = new SubCorridor(getName(), getPowerStrategy().clone());
+        subCorridor.setFloor(getFloor());
+        getEquipments().forEach(e -> {
+            try {
+                subCorridor.addEquipment(e.clone());
+            } catch (CloneNotSupportedException e1) {
+                e1.printStackTrace();
+            }
+        });
+        return subCorridor;
     }
 }
