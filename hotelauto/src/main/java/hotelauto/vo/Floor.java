@@ -22,6 +22,10 @@ public class Floor implements Cloneable {
         c.setFloor(this);
     }
 
+    public List<ICorridor> getCorridors() {
+        return corridors;
+    }
+
     public void setName (String name) {
         this.name = name;
     }
@@ -46,15 +50,13 @@ public class Floor implements Cloneable {
     }
 
     @Override
-    public Floor clone() throws CloneNotSupportedException {
+    public Floor clone() {
         final Floor floor = new Floor(name);
         floor.setHotel(hotel);
         corridors.forEach(c -> {
-            try {
-                floor.addCorridor(c.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
+            final ICorridor clone = c.clone();
+            clone.setFloor(floor);
+            floor.addCorridor(clone);
         });
         return floor;
     }

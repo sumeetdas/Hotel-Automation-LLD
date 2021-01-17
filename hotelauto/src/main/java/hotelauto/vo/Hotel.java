@@ -11,23 +11,14 @@ public class Hotel {
         floor.setHotel(this);
     }
 
-    @Override
-    public Hotel clone() throws CloneNotSupportedException {
-        final Hotel hotel = new Hotel();
-        floors.forEach(f -> {
-            try {
-                hotel.addFloor(f.clone());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        });
-        return hotel;
+    public List<Floor> getFloors() {
+        return floors;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        floors.forEach(f -> sb.append(f.toString()).append("\n\n"));
+        floors.forEach(f -> sb.append(f.toString()));
         return sb.toString();
     }
 }

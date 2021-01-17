@@ -8,7 +8,7 @@ import hotelauto.equipments.IEquipment;
 import hotelauto.powerstrategy.IPowerStrategy;
 import hotelauto.vo.Floor;
 
-public interface ICorridor extends IPowerConsumption, Cloneable {
+public interface ICorridor extends IPowerConsumption {
 
     // adds equipment to corridor
     void addEquipment(IEquipment e);
@@ -40,5 +40,5 @@ public interface ICorridor extends IPowerConsumption, Cloneable {
         return sb.toString();
     }
 
-    ICorridor clone() throws CloneNotSupportedException;
+    ICorridor clone();
 }

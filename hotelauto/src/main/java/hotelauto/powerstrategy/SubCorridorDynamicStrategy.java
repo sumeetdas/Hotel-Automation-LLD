@@ -17,6 +17,10 @@ public class SubCorridorDynamicStrategy implements IPowerStrategy {
     // once the powerSaveMode is on, the 
     private Timer unitPollTimer = new Timer();
 
+    private Timer equipmentTimer = new Timer();
+
+    private long lastMovementTime = System.currentTimeMillis();
+
     public SubCorridorDynamicStrategy () {
     }
 
@@ -65,17 +69,36 @@ public class SubCorridorDynamicStrategy implements IPowerStrategy {
     // strategy to switch on AC for 5 min, then turn off
     private void acPowerSaveModeStrategy(AC ac) {
         // turn on every 1 hour
-        ac.scheduleAtFixedRate(() -> ac.turnOn(), 0, 3600_000);
+        equipmentTimer.scheduleAtFixedRate(new TimerTask(){
+            @Override
+            public void run() {
+                ac.turnOn();
+            }
+        }, 0, 3600_000);
         // turn off after 5 min every 1 hour
-        ac.scheduleAtFixedRate(() -> ac.turnOff(), 300_000, 3600_000);
+        equipmentTimer.scheduleAtFixedRate(new TimerTask(){
+            @Override
+            public void run() {
+                ac.turnOff();
+            }
+        }, 300_000, 3600_000);
     }
 
     // strategy to switch on AC for 20 min, then turn off
     private void acDefaultStrategy(AC ac) {
         // turn on every 1 hour
-        ac.scheduleAtFixedRate(() -> ac.turnOn(), 0, 3600_000);
+        equipmentTimer.scheduleAtFixedRate(new TimerTask(){
+            @Override
+            public void run() {
+                ac.turnOn();
+            }
+        }, 0, 3600_000);
         // turn off after 20 min every 1 hour
-        ac.scheduleAtFixedRate(() -> ac.turnOff(), 1200_000, 3600_000);
+        equipmentTimer.scheduleAtFixedRate(new TimerTask()  {
+            public void run() {
+                ac.turnOff();
+            }
+        }, 1200_000, 3600_000);
     }
     
     @Override
@@ -87,7 +110,10 @@ public class SubCorridorDynamicStrategy implements IPowerStrategy {
                 // do nothing
                 break;
             case NO_MOVEMENT:
-                ac.scheduleOnce(() -> ac.turnOn(), 1000);
+                final long currentTime = System.currentTimeMillis();
+                if (currentTime - lastMovementTime >= 60_000) {
+                    ac.turnOn();
+                }
                 break;
         }
     }
@@ -96,21 +122,19 @@ public class SubCorridorDynamicStrategy implements IPowerStrategy {
     public void lightPowerStrategy(Light light, final SignalTypeEnum signalType) {
         switch(signalType) {
             case MOVEMENT:
-                light.cancelTimerTasks();
                 light.turnOn();
                 break;
             case NO_MOVEMENT:
-                light.scheduleOnce(() -> {
-                    if (light.isOn()) {
-                        light.turnOff();
-                    }
-                }, 1000);
+                final long currentTime = System.currentTimeMillis();
+                if (currentTime - lastMovementTime >= 60_000) {
+                    light.turnOff();
+                }
                 break;
         }
     }
 
     @Override
-    public SubCorridorDynamicStrategy clone() throws CloneNotSupportedException {
+    public SubCorridorDynamicStrategy clone() {
         final SubCorridorDynamicStrategy sub = new SubCorridorDynamicStrategy();
         sub.initialize(corridor);
         return sub;

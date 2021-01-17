@@ -10,7 +10,6 @@ import hotelauto.vo.Floor;
 
 public abstract class AbstractCorridor implements ICorridor {
 
-    private SignalTypeEnum signalType = SignalTypeEnum.NO_MOVEMENT;
     private final String name;
     private final List<IEquipment> equipments = new ArrayList<>();  
     private IPowerStrategy powerStrategy = null;
@@ -39,7 +38,7 @@ public abstract class AbstractCorridor implements ICorridor {
 
     @Override
     public void processSignal(SignalTypeEnum signalTypeEnum) {
-        powerStrategy.processSignal(signalType);
+        powerStrategy.processSignal(signalTypeEnum);
     }
 
     @Override
@@ -72,5 +71,5 @@ public abstract class AbstractCorridor implements ICorridor {
         return powerStrategy;
     }
 
-    public abstract AbstractCorridor clone() throws CloneNotSupportedException;
+    public abstract AbstractCorridor clone();
 }

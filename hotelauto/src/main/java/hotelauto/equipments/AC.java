@@ -15,7 +15,7 @@ public class AC extends AbstractEquipment {
     }
 
     @Override
-    public AC clone() throws CloneNotSupportedException {
+    public AC clone() {
         final AC ac = new AC(getName());
         ac.setCorridor(getCorridor());
         ac.setUnitsConsumedPerSecond(getUnitsConsumedPerSecond());

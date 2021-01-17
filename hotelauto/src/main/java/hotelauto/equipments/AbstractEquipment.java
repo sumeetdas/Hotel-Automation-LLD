@@ -1,8 +1,5 @@
 package hotelauto.equipments;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import hotelauto.corridors.ICorridor;
 import hotelauto.enums.EquipmentStatusEnum;
 
@@ -10,10 +7,10 @@ public abstract class AbstractEquipment implements IEquipment {
 
     private EquipmentStatusEnum status = EquipmentStatusEnum.OFF;
     private final String name;
-    private final Timer timer = new Timer();
     protected double unitsPerSecond = 5.0 / (12 * 3600);
     private ICorridor corridor = null;
     protected double powerConsumption;
+    protected long lastStatusChangeTime = System.currentTimeMillis();
 
     protected AbstractEquipment (final String name) {
         this.name = name;
@@ -31,12 +28,28 @@ public abstract class AbstractEquipment implements IEquipment {
 
     @Override
     public void turnOn() {
-        status = EquipmentStatusEnum.ON;
+        changeStatus(EquipmentStatusEnum.ON);
     }
 
     @Override
     public void turnOff() {
-        status = EquipmentStatusEnum.OFF;
+        changeStatus(EquipmentStatusEnum.OFF);
+    }
+
+    private void changeStatus(EquipmentStatusEnum status) {
+        if (status != this.status) {
+            switch(status) {
+                case ON:
+                    lastStatusChangeTime = System.currentTimeMillis();
+                    break;
+                case OFF:
+                    final long currentTime = System.currentTimeMillis();
+                    powerConsumption += unitsPerSecond * (currentTime - lastStatusChangeTime) / 1000;
+                    lastStatusChangeTime = currentTime;
+                    break;
+            }
+        }
+        this.status = status;
     }
     
     @Override
@@ -75,20 +88,5 @@ public abstract class AbstractEquipment implements IEquipment {
     }
 
     @Override
-    public void cancelTimerTasks() {
-        timer.cancel();
-    }
-
-    @Override
-    public void scheduleOnce(Runnable op, int delay) {
-        timer.schedule((TimerTask) op, delay);
-    }
-
-    @Override
-    public void scheduleAtFixedRate(Runnable op, int delay, int period) {
-        timer.scheduleAtFixedRate((TimerTask) op, delay, period);
-    }
-
-    @Override
-    public abstract AbstractEquipment clone() throws CloneNotSupportedException;
+    public abstract AbstractEquipment clone();
 }

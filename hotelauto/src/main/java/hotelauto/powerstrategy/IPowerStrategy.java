@@ -6,7 +6,7 @@ import hotelauto.equipments.AC;
 import hotelauto.equipments.Light;
 
 // strategy to manage power of equipments
-public interface IPowerStrategy extends Cloneable {
+public interface IPowerStrategy {
     // things to do initially, including setting corridor
     IPowerStrategy initialize (ICorridor corridor);
 
@@ -30,5 +30,5 @@ public interface IPowerStrategy extends Cloneable {
     void acPowerStrategy(final AC ac, final SignalTypeEnum signalType);
     void lightPowerStrategy(final Light light, final SignalTypeEnum signalType);    
 
-    IPowerStrategy clone() throws CloneNotSupportedException;
+    IPowerStrategy clone();
 }

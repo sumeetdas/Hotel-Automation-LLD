@@ -5,7 +5,7 @@ import hotelauto.corridors.ICorridor;
 import hotelauto.enums.EquipmentStatusEnum;
 import hotelauto.enums.EquipmentTypeEnum;
 
-public interface IEquipment extends IPowerConsumption, Cloneable {
+public interface IEquipment extends IPowerConsumption {
     // name of equipment
     String getName();
 
@@ -36,21 +36,10 @@ public interface IEquipment extends IPowerConsumption, Cloneable {
     // get corridor containing this equipment
     ICorridor getCorridor();
 
-    // timer-related convenience methods
-    
-    // cancel timer tasks
-    void cancelTimerTasks();
-
-    // schedule once after a delay
-    void scheduleOnce(Runnable op, int delay);
-
-    // schedule every `period` time after `delay`
-    void scheduleAtFixedRate(Runnable op, int delay, int period);
-
     // custom toString method
     default String toStringCustom() {
         return getName() + ": " + getStatus().name();
     }
 
-    IEquipment clone() throws CloneNotSupportedException;
+    IEquipment clone();
 }

@@ -17,6 +17,8 @@ public class SubCorridorPowerOffStrategy implements IPowerStrategy {
     // once powerConsumptionExceeded, the AC would be switched off always and timer is cancelled
     private Timer unitPollTimer = new Timer();
 
+    private long lastMovementTime = System.currentTimeMillis();
+
     public SubCorridorPowerOffStrategy () {
     }
 
@@ -34,11 +36,13 @@ public class SubCorridorPowerOffStrategy implements IPowerStrategy {
             public void run() {
                 powerConsumptionExceeded = corridor.getPowerConsumption() > 10;
 
-                corridor.getEquipments().stream()
-                .filter(e -> EquipmentTypeEnum.AC.equals(e.getType()))
-                .forEach(e -> e.turnOff());;
-                
-                unitPollTimer.cancel();
+                if (powerConsumptionExceeded) {
+                    corridor.getEquipments().stream()
+                    .filter(e -> EquipmentTypeEnum.AC.equals(e.getType()))
+                    .forEach(e -> e.turnOff());;
+                    
+                    unitPollTimer.cancel();
+                }
             }
         }, 0, 600_000);
         
@@ -49,17 +53,18 @@ public class SubCorridorPowerOffStrategy implements IPowerStrategy {
     public void acPowerStrategy(AC ac, final SignalTypeEnum signalType) {
         switch(signalType) {
             case MOVEMENT:
-                // do nothing.. except cancel tasks related to NO_MOVEMENT
-                ac.cancelTimerTasks();
+                ac.turnOff();
+                lastMovementTime = System.currentTimeMillis();
                 break;
             case NO_MOVEMENT:
                 if (powerConsumptionExceeded) {
                     // do nothing.. AC stays off
                 }
                 else {
-                    ac.scheduleOnce(() -> ac.turnOn(), 1000);
-                    // turn off ac after 10 min
-                    ac.scheduleOnce(() -> ac.turnOff(), 600_000);
+                    final long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastMovementTime >= 60_000) {
+                        ac.turnOn();
+                    }
                 }
                 break;
         }
@@ -69,21 +74,19 @@ public class SubCorridorPowerOffStrategy implements IPowerStrategy {
     public void lightPowerStrategy(Light light, final SignalTypeEnum signalType) {
         switch(signalType) {
             case MOVEMENT:
-                light.cancelTimerTasks();
                 light.turnOn();
                 break;
             case NO_MOVEMENT:
-                light.scheduleOnce(() -> {
-                    if (light.isOn()) {
-                        light.turnOff();
-                    }
-                }, 1000);
+                final long currentTime = System.currentTimeMillis();
+                if (currentTime - lastMovementTime >= 60_000) {
+                    light.turnOff();
+                }
                 break;
         }
     }
 
     @Override
-    public SubCorridorPowerOffStrategy clone() throws CloneNotSupportedException {
+    public SubCorridorPowerOffStrategy clone() {
         final SubCorridorPowerOffStrategy sub = new SubCorridorPowerOffStrategy();
         sub.initialize(corridor);
         return sub;

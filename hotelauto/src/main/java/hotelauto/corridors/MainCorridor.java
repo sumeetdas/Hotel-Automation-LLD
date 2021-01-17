@@ -17,16 +17,10 @@ public class MainCorridor extends AbstractCorridor {
     }
 
     @Override
-    public MainCorridor clone() throws CloneNotSupportedException {
+    public MainCorridor clone() {
         final MainCorridor mainCorridor = new MainCorridor(getName(), getPowerStrategy().clone());
         mainCorridor.setFloor(getFloor());
-        getEquipments().forEach(e -> {
-            try {
-                mainCorridor.addEquipment(e.clone());
-            } catch (CloneNotSupportedException e1) {
-                e1.printStackTrace();
-            }
-        });
+        getEquipments().forEach(e -> mainCorridor.addEquipment(e.clone()));
         return mainCorridor;
     }
 }

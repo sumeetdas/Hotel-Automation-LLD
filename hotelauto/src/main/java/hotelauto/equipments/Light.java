@@ -15,7 +15,7 @@ public class Light extends AbstractEquipment {
     }
 
     @Override
-    public Light clone() throws CloneNotSupportedException {
+    public Light clone() {
         final Light light = new Light(getName());
         light.setCorridor(getCorridor());
         light.setUnitsConsumedPerSecond(getUnitsConsumedPerSecond());

@@ -36,7 +36,7 @@ public class MainCorridorDefaultPowerStrategy implements IPowerStrategy {
     }
 
     @Override
-    public MainCorridorDefaultPowerStrategy clone() throws CloneNotSupportedException {
+    public MainCorridorDefaultPowerStrategy clone() {
         final MainCorridorDefaultPowerStrategy main = new MainCorridorDefaultPowerStrategy();
         main.initialize(corridor);
         return main;
